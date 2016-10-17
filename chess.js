@@ -238,15 +238,11 @@ var Chess = function(fen) {
     return true;
   }
 
-  /* TODO: this function is pretty much crap - it validates structure but
-   * completely ignores content (e.g. doesn't verify that each side has a king)
-   * ... we should rewrite this, and ditch the silly error_number field while
-   * we're at it
-   */
+
   function validate_fen(fen) {
     var errors = {
        0: 'No errors.',
-       1: 'FEN string must contain six space-delimited fields.',
+       1: 'FEN string must contain four or six space-delimited fields.',
        2: '6th field (move number) must be a positive integer.',
        3: '5th field (half move counter) must be a non-negative integer.',
        4: '4th field (en-passant square) is invalid.',
@@ -261,18 +257,20 @@ var Chess = function(fen) {
 
     /* 1st criterion: 6 space-seperated fields? */
     var tokens = fen.split(/\s+/);
-    if (tokens.length !== 6) {
+    if (!(tokens.length === 6 || tokens.length === 4)) {
       return {valid: false, error_number: 1, error: errors[1]};
     }
 
-    /* 2nd criterion: move number field is a integer value > 0? */
-    if (isNaN(tokens[5]) || (parseInt(tokens[5], 10) <= 0)) {
-      return {valid: false, error_number: 2, error: errors[2]};
-    }
+    if (tokens.length > 4){
+      /* 2nd criterion: move number field is a integer value > 0? */
+      if (isNaN(tokens[5]) || (parseInt(tokens[5], 10) <= 0)) {
+        return {valid: false, error_number: 2, error: errors[2]};
+      }
 
-    /* 3rd criterion: half move counter is an integer >= 0? */
-    if (isNaN(tokens[4]) || (parseInt(tokens[4], 10) < 0)) {
-      return {valid: false, error_number: 3, error: errors[3]};
+      /* 3rd criterion: half move counter is an integer >= 0? */
+      if (isNaN(tokens[4]) || (parseInt(tokens[4], 10) < 0)) {
+        return {valid: false, error_number: 3, error: errors[3]};
+      }
     }
 
     /* 4th criterion: 4th field is a valid e.p.-string? */
