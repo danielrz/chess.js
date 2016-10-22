@@ -242,7 +242,7 @@ var Chess = function(fen) {
   function validate_fen(fen) {
     var errors = {
        0: 'No errors.',
-       1: 'FEN string must contain four or six space-delimited fields.',
+       1: 'FEN string must contain two or six space-delimited fields.',
        2: '6th field (move number) must be a positive integer.',
        3: '5th field (half move counter) must be a non-negative integer.',
        4: '4th field (en-passant square) is invalid.',
@@ -257,20 +257,28 @@ var Chess = function(fen) {
 
     /* 1st criterion: 6 space-seperated fields? */
     var tokens = fen.split(/\s+/);
-    if (!(tokens.length === 6 || tokens.length === 4)) {
+
+    if (!(tokens.length >= 2 && tokens.length <= 6)){
       return {valid: false, error_number: 1, error: errors[1]};
     }
 
-    if (tokens.length > 4){
-      /* 2nd criterion: move number field is a integer value > 0? */
-      if (isNaN(tokens[5]) || (parseInt(tokens[5], 10) <= 0)) {
-        return {valid: false, error_number: 2, error: errors[2]};
+    if (tokens.length < 6){
+      var FEN_DEFAULT_MISSING_PARTS = ["KQkq", "-", "-", 0, 1];
+      for (var i = (6 - tokens.length); i <= 6; i++){
+        fen = fen + " " + FEN_DEFAULT_MISSING_PARTS[i - 4];
       }
+      tokens = fen.split(/\s+/);
+    }
 
-      /* 3rd criterion: half move counter is an integer >= 0? */
-      if (isNaN(tokens[4]) || (parseInt(tokens[4], 10) < 0)) {
-        return {valid: false, error_number: 3, error: errors[3]};
-      }
+
+    /* 2nd criterion: move number field is a integer value > 0? */
+    if (isNaN(tokens[5]) || (parseInt(tokens[5], 10) <= 0)) {
+      return {valid: false, error_number: 2, error: errors[2]};
+    }
+
+    /* 3rd criterion: half move counter is an integer >= 0? */
+    if (isNaN(tokens[4]) || (parseInt(tokens[4], 10) < 0)) {
+      return {valid: false, error_number: 3, error: errors[3]};
     }
 
     /* 4th criterion: 4th field is a valid e.p.-string? */
