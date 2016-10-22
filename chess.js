@@ -263,9 +263,9 @@ var Chess = function(fen) {
     }
 
     if (tokens.length < 6){
-      var FEN_DEFAULT_MISSING_PARTS = ["KQkq", "-", "-", 0, 1];
-      for (var i = (6 - tokens.length); i <= 6; i++){
-        fen = fen + " " + FEN_DEFAULT_MISSING_PARTS[i - 4];
+      var FEN_DEFAULT_MISSING_PARTS = ["KQkq", "-", 0, 1];
+      for (var i = tokens.length; i < 6; i++){
+        fen = fen + " " + FEN_DEFAULT_MISSING_PARTS[i - 2];
       }
       tokens = fen.split(/\s+/);
     }
